@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Ji Travels</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Google Fonts for Cursive Heading -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("KiioQ5wiLlHKr-8Ik"); // Replace with your EmailJS Public Key
+        })();
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            scroll-behavior: smooth;
+            padding-top: 80px;
+        }
+        .navbar {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .navbar a {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #ffd700;
+            transform: scale(1.1);
+        }
+        .hero-slideshow {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 0;
+        }
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+        .hero-slide.active {
+            opacity: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+        }
+        .hero-content h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 1px 3px rgba(0, 0, 0, 0.6);
+            margin-bottom: 1.5rem;
+        }
+        .hero-content p {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65), 0 1px 2px rgba(0, 0, 0, 0.45);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .dot-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 2px solid white;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .dot.active {
+            background-color: white;
+        }
+        .section-divider {
+            border-top: 2px solid #4b6cb7;
+            margin: 2rem auto;
+            width: 80%;
+            max-width: 1200px;
+            opacity: 0.5;
+        }
+        .offering-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.5s ease-out;
+        }
+        .offering-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .review-card {
+            transition: transform 0.3s ease;
+            animation: slideUp 0.5s ease-out;
+        }
+        .review-card:hover {
+            transform: scale(1.05);
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1001;
+            bottom: 30px;
+            right: 30px;
+            animation: slideIn 0.5s, slideOut 0.5s 2.5s;
+        }
+        .toast.show {
+            visibility: visible;
+        }
+        .section {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+        }
+        .nav-links {
+            transition: all 0.3s ease;
+        }
+        .nav-links.active {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .error {
+            border-color: red !important;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { bottom: -100px; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: -100px; opacity: 0; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .nav-links {
+                display: none;
+                width: 100%;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links a {
+                padding: 0.5rem;
+                font-size: 1.2rem;
+            }
+            .offering-card {
+                margin-bottom: 20px;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .navbar {
+                padding: 10px;
+            }
+            .navbar .text-2xl {
+                font-size: 1.5rem;
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .hero-content p {
+                font-size: 1rem;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar p-4 flex justify-between items-center">
+        <div class="text-white text-2xl font-bold">Shree Ji Travels</div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links space-x-4 md:flex md:items-center">
+            <a href="#home" class="text-white hover:text-yellow-300">Home</a>
+            <a href="#offerings" class="text-white hover:text-yellow-300">Offerings</a>
+            <a href="#reviews" class="text-white hover:text-yellow-300">Reviews</a>
+            <a href="#quote" class="text-white hover:text-yellow-300">Get a Quote</a>
+            <a href="#connect" class="text-white hover:text-yellow-300">Connect with Us</a>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="hero-slideshow section flex items-center justify-center text-center">
+        <!-- Background Slides -->
+        <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?q=80&w=2340');"></div>
+        <div class="hero-slide" style="background-image: url('https://cdn.pixabay.com/photo/2017/05/14/10/45/udaipur-2311788_1280.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('https://cdn.pixabay.com/photo/2021/11/06/08/50/fort-6772812_1280.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('https://cdn.pixabay.com/photo/2021/04/06/11/22/hawa-mahal-6156123_1280.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('https://cdn.pixabay.com/photo/2013/07/19/17/38/kerala-165347_1280.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('https://cdn.pixabay.com/photo/2016/11/14/03/22/elephant-1822481_1280.jpg');"></div>
+        <!-- Hero Text -->
+        <div class="hero-content px-6">
+            <h1>Discover Rajasthan & Kerala with Shree Ji Travels</h1>
+            <p>Discover the magic of India's most vibrant destinations with our budget-friendly packages.<br> From royal palaces in Rajasthan to the backwaters of Kerala, enjoy seamless bookings, curated itineraries, and heartfelt hospitality — whether it's a honeymoon, family trip, or solo journey.</p>
+        </div>
+        <!-- Dot Indicators -->
+        <div class="dot-indicators">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Offerings Section -->
+    <section id="offerings" class="py-16 px-4 section">
+        <h2 class="text-3xl font-bold text-center mb-8">Our Offerings</h2>
+        <!-- Rajasthan Offerings -->
+        <h3 class="text-2xl font-semibold text-center mb-6">Rajasthan</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://www.flamingotravels.co.in/_next/image?url=https%3A%2F%2Fimgcdn.flamingotravels.co.in%2FImages%2FCity%2Fcrystal-gallery-Udaipur.jpg&w=1920&q=90" alt="Udaipur" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Udaipur</h3>
+                    <p class="text-gray-600">The City of Lakes, known for its stunning palaces and serene lakes.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1524229648276-e66561fe45a9?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8amFpcHVyfGVufDB8fDB8fHww" alt="Jaipur" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Jaipur</h3>
+                    <p class="text-gray-600">The Pink City, famous for its forts, palaces, and vibrant culture.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://plus.unsplash.com/premium_photo-1661904165347-369200d4bf72?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8am9kaHB1cnxlbnwwfHwwfHx8MA%3D%3D" alt="Jodhpur" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Jodhpur</h3>
+                    <p class="text-gray-600">The Blue City, home to majestic forts and desert landscapes.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://plus.unsplash.com/premium_photo-1661962428918-6a57ab674e23?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8amFpc2FsbWVyfGVufDB8fDB8fHww" alt="Jaisalmer" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Jaisalmer</h3>
+                    <p class="text-gray-600">The Golden City, renowned for its sand dunes and historic havelis.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Kerala Offerings -->
+        <h3 class="text-2xl font-semibold text-center mt-12 mb-6">Kerala</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://t4.ftcdn.net/jpg/01/28/57/63/360_F_128576315_ejpjSy7S7fsH275jCDuUtykU1O3B6rUb.jpg" alt="Munnar" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Munnar</h3>
+                    <p class="text-gray-600">A hill station with lush tea plantations and misty mountains.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://media.istockphoto.com/id/914617344/photo/traditional-house-boat-in-kerala-india.jpg?s=612x612&w=0&k=20&c=pIGW0b-9dZ7x2_5T4YE8uDEW5e5eThm0hHpJAyCmzlI=" alt="Kochi" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Kochi</h3>
+                    <p class="text-gray-600">A coastal city with historic forts and vibrant backwaters.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1593693397690-362cb9666fc2" alt="Alleppey" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Alleppey</h3>
+                    <p class="text-gray-600">Famous for its serene backwaters and houseboat cruises.</p>
+                </div>
+            </div>
+            <div class="offering-card bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="https://media.istockphoto.com/id/512293088/photo/lighthouse-on-the-cliff-in-kovalam-beach.jpg?s=612x612&w=0&k=20&c=bcT38KbfguRr13iqoG9aE9w7Np4stdsVmddxsnosQgg=" alt="Kovalam" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Kovalam</h3>
+                    <p class="text-gray-600">A beach paradise with golden sands and clear waters.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="section-divider"></div>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-16 px-4 bg-gray-100 section">
+        <h2 class="text-3xl font-bold text-center mb-8">What Our Travelers Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div class="review-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold">Priya Sharma</h3>
+                <p class="text-yellow-500">★★★★★</p>
+                <p class="text-gray-600">Our Rajasthan trip with Shree Ji Travels was fantastic! The hotels were top-notch, and the cab service was punctual. Highly recommend their customized packages!</p>
+            </div>
+            <div class="review-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold">Rahul Verma</h3>
+                <p class="text-yellow-500">★★★★☆</p>
+                <p class="text-gray-600">Kerala backwaters were a dream come true. Shree Ji Travels made our honeymoon unforgettable with their attention to detail and great service.</p>
+            </div>
+            <div class="review-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold">Anita Singh</h3>
+                <p class="text-yellow-500">★★★★★</p>
+                <p class="text-gray-600">The team planned a perfect family trip to Jaipur. Everything from tickets to transport was seamless. Will travel with them again!</p>
+            </div>
+            <div class="review-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold">Vikram Patel</h3>
+                <p class="text-yellow-500">★★★★☆</p>
+                <p class="text-gray-600">Our solo trip to Jaisalmer was well-organized. Shree Ji Travels ensured all details were covered, making it a memorable adventure!</p>
+            </div>
+            <div class="review-card bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold">Sneha Gupta</h3>
+                <p class="text-yellow-500">★★★★★</p>
+                <p class="text-gray-600">The Munnar package was perfect for our office trip. The team’s dedication made every moment enjoyable and stress-free.</p>
+            </div>
+        </div>
+    </section>
+    <div class="section-divider"></div>
+
+    <!-- Get a Quote Section -->
+    <section id="quote" class="py-16 px-4 section">
+        <h2 class="text-3xl font-bold text-center mb-8">Get a Quote</h2>
+        <form id="quoteForm" class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex flex-wrap -mx-2">
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="name" class="block text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" class="w-full p-2 border rounded" required>
+                    <span class="error-message" id="name-error">Please enter a valid name.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="passengers" class="block text-gray-700">Number of Passengers</label>
+                    <input type="number" id="passengers" name="passengers" class="w-full p-2 border rounded" required min="1">
+                    <span class="error-message" id="passengers-error">Please enter at least 1 passenger.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="children" class="block text-gray-700">Children Under 5</label>
+                    <input type="number" id="children" name="children" class="w-full p-2 border rounded" required min="0">
+                    <span class="error-message" id="children-error">Please enter a valid number.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="destination" class="block text-gray-700">Destination</label>
+                    <select id="destination" name="destination" class="w-full p-2 border rounded" required>
+                        <option value="" disabled selected>Select Destination</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Kerala">Kerala</option>
+                    </select>
+                    <span class="error-message" id="destination-error">Please select a destination.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="travelStartDate" class="block text-gray-700">Travel Start Date</label>
+                    <input type="date" id="travelStartDate" name="travelStartDate" class="w-full p-2 border rounded" required min="2025-07-20">
+                    <span class="error-message" id="travelStartDate-error">Please select a valid start date.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="travelEndDate" class="block text-gray-700">Travel End Date</label>
+                    <input type="date" id="travelEndDate" name="travelEndDate" class="w-full p-2 border rounded" required min="2025-07-21">
+                    <span class="error-message" id="travelEndDate-error">End date must be after start date.</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="mobile" class="block text-gray-700">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" class="w-full p-2 border rounded" required placeholder="+919876543210">
+                    <span class="error-message" id="mobile-error">Please enter a valid mobile number (e.g., +919876543210).</span>
+                </div>
+                <div class="w-full md:w-1/2 px-2 mb-4">
+                    <label for="email" class="block text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" class="w-full p-2 border rounded" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <span class="error-message" id="email-error">Please enter a valid email address.</span>
+                </div>
+                <div class="w-full px-2 mb-4">
+                    <label for="comments" class="block text-gray-700">Additional Comments</label>
+                    <textarea id="comments" name="comments" class="w-full p-2 border rounded" required placeholder="Let us know if flights are booked, hotel preferences, any special requests, or other travel details..."></textarea>
+                    <span class="error-message" id="comments-error">Please enter your comments.</span>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition duration-300">Submit</button>
+        </form>
+        <div id="toast" class="toast">We have received your info! Someone from our team will get in touch with you soon. Happy travels!</div>
+    </section>
+    <div class="section-divider"></div>
+
+    <!-- Connect with Us Section -->
+    <section id="connect" class="py-16 px-4 bg-gray-100 section">
+        <h2 class="text-3xl font-bold text-center mb-8">Connect with Us</h2>
+        <div class="max-w-2xl mx-auto text-center">
+            <p class="text-gray-600 mb-4">
+                Shree Ji Travels, established in 2025, is a passionate venture by Sonali Jain and Rishab Jain, a couple from Daltonganj, Jharkhand. 
+                With offices in Ranchi, Daltonganj (Jharkhand), and Bharatpur (Rajasthan), we are driven by our love for travel and a commitment to 
+                providing exceptional experiences. Our entrepreneurial spirit ensures personalized, high-quality services tailored to your needs, 
+                whether you're planning a romantic honeymoon, a fun family vacation, or an adventurous solo trip. We are continuously expanding our 
+                offices and tourist destinations to bring you more exciting travel options. Stay in touch for the latest updates!
+            </p>
+            <p class="text-gray-600 mb-4">Email: <a href="mailto:shreejitravels04@gmail.com" class="text-blue-600 hover:underline">shreejitravels04@gmail.com</a></p>
+            <p class="text-gray-600 mb-4">Phone: <a href="tel:+919876543210" class="text-blue-600 hover:underline">+91 9876543210</a></p>
+            <p class="text-2xl font-bold text-blue-600 mt-4">Looking for adventure? Shree Ji Travels is your way to wander!</p>
+        </div>
+    </section>
+
+    <script>
+        // Smooth Scrolling for Header Links
+        document.querySelectorAll('.nav-links a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                window.scrollTo({
+                    top: targetElement.offsetTop - navbarHeight,
+                    behavior: 'smooth'
+                });
+                // Close mobile menu if open
+                const navLinks = document.querySelector('.nav-links');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Hamburger Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+
+        // Slideshow Logic
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+                dots[i].classList.toggle('active', i === index);
+            });
+        }
+
+        // Auto-slide every 5 seconds
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 5000);
+
+        // Manual dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+
+        // Form Submission with Validation
+        document.getElementById('quoteForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Clear previous error states
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                passengers: document.getElementById('passengers').value,
+                children: document.getElementById('children').value,
+                destination: document.getElementById('destination').value,
+                travelStartDate: document.getElementById('travelStartDate').value,
+                travelEndDate: document.getElementById('travelEndDate').value,
+                mobile: document.getElementById('mobile').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                comments: document.getElementById('comments').value.trim()
+            };
+
+            // Validation
+            let isValid = true;
+
+            // Name validation (non-empty)
+            if (!formData.name) {
+                document.getElementById('name').classList.add('error');
+                document.getElementById('name-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Passengers validation (at least 1)
+            if (formData.passengers < 1) {
+                document.getElementById('passengers').classList.add('error');
+                document.getElementById('passengers-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Children validation (non-negative)
+            if (formData.children < 0) {
+                document.getElementById('children').classList.add('error');
+                document.getElementById('children-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Destination validation (must be selected)
+            if (!formData.destination) {
+                document.getElementById('destination').classList.add('error');
+                document.getElementById('destination-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Date validation (end date after start date)
+            const startDate = new Date(formData.travelStartDate);
+            const endDate = new Date(formData.travelEndDate);
+            const today = new Date('2025-07-20'); // Set to current date + 1
+            if (!formData.travelStartDate || startDate < today) {
+                document.getElementById('travelStartDate').classList.add('error');
+                document.getElementById('travelStartDate-error').style.display = 'block';
+                isValid = false;
+            }
+            if (!formData.travelEndDate || endDate <= startDate) {
+                document.getElementById('travelEndDate').classList.add('error');
+                document.getElementById('travelEndDate-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Mobile validation (country code + 10 digits, only + and numbers allowed)
+            const mobileRegex = /^\+\d{1,3}\d{10}$/;
+            if (!mobileRegex.test(formData.mobile)) {
+                document.getElementById('mobile').classList.add('error');
+                document.getElementById('mobile-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Email validation (strict regex)
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(formData.email)) {
+                document.getElementById('email').classList.add('error');
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Comments validation (non-empty)
+            if (!formData.comments) {
+                document.getElementById('comments').classList.add('error');
+                document.getElementById('comments-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                alert('Please correct the errors in the form.');
+                return;
+            }
+
+            // Flag to determine if toast should be shown
+            let showToast = false;
+
+            // EmailJS: Send email
+            try {
+                await emailjs.send('service_o87dwmk', 'template_9y0gwei', formData);
+                console.log('Email sent successfully!');
+                showToast = true; // Email sent successfully
+            } catch (error) {
+                console.error('Email failed to send:', error);
+                alert('Failed to send email. Please try again.');
+            }
+
+            // WhatsApp: Open pre-filled message
+            try {
+                const whatsappMessage = `New Quote Request:%0AName: ${formData.name}%0APassengers: ${formData.passengers}%0AChildren Under 5: ${formData.children}%0ADestination: ${formData.destination}%0ATravel Start Date: ${formData.travelStartDate}%0ATravel End Date: ${formData.travelEndDate}%0AMobile: ${formData.mobile}%0AEmail: ${formData.email}%0AComments: ${formData.comments}`;
+                window.open(`https://wa.me/+919876543210?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                showToast = true; // WhatsApp window opened
+            } catch (error) {
+                console.error('WhatsApp failed to open:', error);
+                alert('Failed to open WhatsApp. Please try again.');
+            }
+
+            // Show toast if either email or WhatsApp was successful
+            if (showToast) {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            // Reset form
+            this.reset();
+        });
+
+        // Trigger animations on scroll
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 1s ease-out forwards';
+                }
+            });
+        }, { threshold: 0.2 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
