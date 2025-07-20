@@ -634,8 +634,9 @@
         }
 
         // WhatsApp: Open pre-filled message
-        try {
-    const whatsappMessage = `
+// WhatsApp: Open pre-filled message
+    try {
+        const whatsappMessage = `
 Hi Shree Ji Travels Team,
 
 You’ve received a new travel enquiry. Please find the traveller details below:
@@ -653,14 +654,17 @@ Please reach out to the traveller as soon as possible to provide a quote and ass
 
 Warm regards,
 Shree Ji Travels
-    `;
-
-    window.open(`https://wa.me/+918210314682text=${encodeURIComponent(whatsappMessage)}`, '_blank');
-    showToast = true;
-} catch (error) {
-    console.error('WhatsApp failed to open:', error);
-    alert('Failed to open WhatsApp. Please try again.');
-}
+        `;
+        // Corrected WhatsApp URL with proper query parameter syntax
+        const phoneNumber = '+918210314682'; // Ensure the phone number is correct
+        const encodedMessage = encodeURIComponent(whatsappMessage.trim());
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+        showToast = true;
+    } catch (error) {
+        console.error('WhatsApp failed to open:', error);
+        alert('Failed to open WhatsApp. Please try again or contact us directly.');
+    }
 
         // Show toast if either email or WhatsApp was successful
         if (showToast) {
